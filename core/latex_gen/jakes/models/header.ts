@@ -29,40 +29,48 @@ export class Header {
         this.items.splice(index,1);
     }
 }
-  
-export class HeaderItem {
-    private content: string;
-    private url_present: boolean;
-    private url_link: string;
+// core/header.ts
 
-    constructor(content: string, url_present: boolean, url_link: string) {
-        this.content = content;
-        this.url_present = url_present;
-        this.url_link = url_link;
+export enum LinkType {
+    Normal = 'NORMAL',
+    Email = 'EMAIL',
+    Website = 'WEBSITE',
+}
+
+export class HeaderItem {
+    private content: string
+    private type: LinkType
+    private urlLink: string | null
+
+    constructor(content: string, type: LinkType, urlLink: string | null = null) {
+        this.content = content
+        this.type = type
+        this.urlLink = urlLink
     }
 
     public getContent(): string {
-        return this.content;
+        return this.content
+    }
+    public setContent(value: string): void {
+        this.content = value
     }
 
-    public setContent(value: string): void {
-        this.content = value;
+    public getType(): LinkType {
+        return this.type
+    }
+    public setType(value: LinkType): void {
+        this.type = value
+    }
+
+    public getUrlLink(): string | null {
+        return this.urlLink
+    }
+    public setUrlLink(value: string): void {
+        this.urlLink = value
     }
 
     public hasUrl(): boolean {
-        return this.url_present;
-    }
-
-    public setUrlPresent(value: boolean): void {
-        this.url_present = value;
-    }
-
-    public getUrlLink(): string {
-        return this.url_link;
-    }
-
-    public setUrlLink(value: string): void {
-        this.url_link = value;
+        return this.type === LinkType.Email || this.type === LinkType.Website
     }
 }
   
