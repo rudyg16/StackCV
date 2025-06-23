@@ -7,7 +7,7 @@ function generateHeader(name,headerList){
     \\textbf{\\Huge \\scshape ${name}} \\ \\vspace{1pt}`);
 
     const itemStrings = [];
-    for(let i = 0;i<headerList.length();i++){
+    for(let i = 0;i<headerList.length;i++){
         item = headerList[i];
         const chunk = createHeaderItem(
             item.getContent(),
