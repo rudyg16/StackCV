@@ -1,52 +1,60 @@
+PRAGMA foreign_keys = ON;
+
 -- USERS
 CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  email TEXT UNIQUE,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- RESUMES
-CREATE TABLE IF NOT EXISTS resumes (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER NOT NULL,
-  title TEXT NOT NULL,
-  description TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- SECTIONS
-CREATE TABLE IF NOT EXISTS sections (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  resume_id INTEGER NOT NULL,
-  name TEXT NOT NULL,
-  position INTEGER DEFAULT 0,
-  FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE CASCADE
-);
-
--- RESUME ITEMS
-CREATE TABLE IF NOT EXISTS resume_items (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  section_id INTEGER NOT NULL,
-  title TEXT,
-  organization TEXT,
-  location TEXT,
-  description TEXT,
-  start_date TEXT,
-  end_date TEXT,
-  position INTEGER DEFAULT 0,
-  FOREIGN KEY (section_id) REFERENCES sections(id) ON DELETE CASCADE
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- TEMPLATES
 CREATE TABLE IF NOT EXISTS templates (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  file_path TEXT NOT NULL,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    file_path TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- RESUMES
+CREATE TABLE IF NOT EXISTS resumes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+-- SECTIONS (now linked to templates)
+CREATE TABLE IF NOT EXISTS sections (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    resume_id INTEGER NOT NULL,
+    template_id INTEGER,
+    name TEXT NOT NULL,
+    position INTEGER DEFAULT 0,
+    FOREIGN KEY (resume_id) REFERENCES resumes (id) ON DELETE CASCADE,
+    FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE SET NULL
+);
+
+-- RESUME ITEMS (with JSON metadata)
+CREATE TABLE IF NOT EXISTS resume_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    section_id INTEGER NOT NULL,
+    title TEXT,
+    metadata JSON NOT NULL DEFAULT '{}',
+    start_date TEXT,
+    end_date TEXT,
+    position INTEGER DEFAULT 0,
+    FOREIGN KEY (section_id) REFERENCES sections (id) ON DELETE CASCADE
 );
 
 -- PDF OUTPUTS
-CREATE TABLE IF NOT EXISTS pdf_out_
+CREATE TABLE IF NOT EXISTS pdf_outputs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    resume_id INTEGER NOT NULL,
+    file_path TEXT NOT NULL,
+    generated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (resume_id) REFERENCES resumes (id) ON DELETE CASCADE
+);
