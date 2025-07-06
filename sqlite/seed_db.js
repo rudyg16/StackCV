@@ -1,29 +1,21 @@
-const fs = require('fs');
-const sqlite3 = require('sqlite3').verbose();//verbose creates more detailed error logging 
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import sqlite3 from 'sqlite3';
+import {app} from 'electron';
+import createDatabase from './create_db';'./create_db'
 
-const dbPath = path.join(__dirname,'stackcv.db');//get path of db to be created
-const schemaPath = path.join(__dirname, 'stackcvschema.sql');//Path to schema,__dirname gets abs path of parent directory of js file 
+const dbPath = path.join(app.getPath('userData'),'stackcv.db');
 
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('Failed to create/open DB:', err.message);
-        return;
-    }
+if (fs.existsSync(dbPath)) {
+    console.log('Database file already exists at:', dbPath);
+} else {
+    console.log('Database does not exist yet. Initializing...');
+    createDatabase();
+}
+const jakeTempPath = path.join(__dirname,'../templates/jakes/template.tex');
+const jakeFullPath = path.join(__dirname, '../templates/jakes/full.tex');
 
-    console.log('Database opened at', dbPath);
-    const schemaSQL = fs.readFileSync(schemaPath, 'utf8');// Read SQL schema
-    
-    db.exec(schemaSQL, (err) => { // Execute the SQL commands to create tables
-        if (err) {
-            console.error('Failed to initialize schema:', err.message);
-        } else {
-            console.log('Schema created successfully');
-        }
+const insertTemplate = dbPath.prepare("INSERT INTO templates(name,file_path) VALUES(?,?");
 
-        // Optional: close DB when done
-        db.close();
-    });
-});
+const insertJakeSections =dbPath.prepare("INSERT INTO templates()") 
 
-    
